@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: giropops-senhas-deployment
+  name: giropops-senhas-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: giropops-senhas-deployment
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: giropops-senhas-deployment
+    spec:
+      containers:
+      - image: mushthielv/giropops-senhas-assinada:1.0
+        name: giropops-senhas
+        env:
+        - name: REDIS_HOST
+          value: 192.168.15.143
+        resources:
+          limits:
+            cpu: 0.5
+            memory: 256Mi
+          requests:
+            cpu: 0.25
+            memory: 128Mi
+        livenessProbe:
+          #tcpSocket:
+          #  port: 81
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
+        startupProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 1
+          successThreshold: 1
